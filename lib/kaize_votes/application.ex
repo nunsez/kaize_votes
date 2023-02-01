@@ -17,6 +17,9 @@ defmodule KaizeVotes.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: KaizeVotes.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+
+    KaizeVotes.Runner.call()
+    result
   end
 end
