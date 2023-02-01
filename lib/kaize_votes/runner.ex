@@ -32,13 +32,3 @@ defmodule KaizeVotes.Runner do
     # File.write!("kaize.html", response.body)
   end
 end
-
-
-# _token: "",
-# comment: "",
-# vote: "up",
-# vote_id: ""
-
-# 302
-# Found
-# location: https://kaize.io/proposal/146103 current

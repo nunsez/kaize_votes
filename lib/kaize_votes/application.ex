@@ -12,7 +12,8 @@ defmodule KaizeVotes.Application do
       # Starts a worker by calling: KaizeVotes.Worker.start_link(arg)
       # {KaizeVotes.Worker, arg}
       {KaizeVotes.CookieStore, []},
-      {Finch, name: MyFinch}
+      {Finch, name: MyFinch},
+      # {KaizeVotes.Worker, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
