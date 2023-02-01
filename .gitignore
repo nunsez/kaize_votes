@@ -24,3 +24,5 @@ kaize_votes-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+/cookie.txt
