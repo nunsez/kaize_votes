@@ -1,11 +1,14 @@
 defmodule KaizeVotes.Runner do
+  @moduledoc false
+
   alias KaizeVotes.Http
   alias KaizeVotes.Html
 
   @spec call :: any()
   def call do
     # login()
-    home_page()
+    # home_page()
+    GenServer.cast(KaizeVotes.Worker, :start)
   end
 
   def login do
@@ -27,7 +30,7 @@ defmodule KaizeVotes.Runner do
   def home_page do
     response = Http.get("https://kaize.io/")
     document = Html.parse(response.body)
-    Html.logged_in?(document) |> IO.inspect()
+    Html.logged_in?(document)
 
     # File.write!("kaize.html", response.body)
   end

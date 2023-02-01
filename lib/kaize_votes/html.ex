@@ -1,4 +1,6 @@
 defmodule KaizeVotes.Html do
+  @moduledoc false
+
   def find_token_element(document) do
     find(document, "form.auth-form > input[name=\"_token\"]")
   end
@@ -27,14 +29,14 @@ defmodule KaizeVotes.Html do
 
     case attribute do
       nil -> nil
-      {name, value} -> value
+      {_, value} -> value
     end
   end
 
   def find(node, selector) do
     case find_all(node, selector) do
       [] -> nil
-      [el | rest] -> el
+      [el | _] -> el
     end
   end
 

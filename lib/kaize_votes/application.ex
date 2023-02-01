@@ -13,7 +13,7 @@ defmodule KaizeVotes.Application do
       # {KaizeVotes.Worker, arg}
       {KaizeVotes.CookieStore, []},
       {Finch, name: MyFinch},
-      # {KaizeVotes.Worker, []}
+      {KaizeVotes.Worker, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
