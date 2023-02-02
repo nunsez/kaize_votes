@@ -1,27 +1,26 @@
 defmodule KaizeVotes.Html do
   @moduledoc false
 
-  def find_token_element(document) do
-    find(document, "form.auth-form > input[name=\"_token\"]")
-  end
+  @type html_tree() :: Floki.html_tree()
+  @type html_node() :: Floki.html_node()
+  @type document() :: html_tree() | html_node()
 
-  def get_value(el) do
-    [{_, attributes, _} | _] = el
-
-    attributes
-    |> Enum.find(fn(a) -> elem(a, 0) == "value" end)
-    |> elem(1)
-  end
-
+  @spec logged_in?(document()) :: boolean()
   def logged_in?(document) do
-    find(document, "header .right > .account") != nil
+    find(document, "header .right > .account") != []
   end
 
+  @spec parse(String.t()) :: html_tree()
   def parse(html) do
     case Floki.parse_document(html) do
       {:ok, document} -> document
       _ -> []
     end
+  end
+
+  @spec attribute(document(), String.t()) :: String.t() | nil
+  def attribute([node | _], name) do
+    attribute(node, name)
   end
 
   def attribute({_, attributes, _}, name) when is_list(attributes) do
@@ -33,14 +32,8 @@ defmodule KaizeVotes.Html do
     end
   end
 
-  def find(node, selector) do
-    case find_all(node, selector) do
-      [] -> nil
-      [el | _] -> el
-    end
-  end
-
-  def find_all(node, selector) do
-    Floki.find(node, selector)
+  @spec find(document(), String.t()) :: html_tree()
+  def find(document, selector) do
+    Floki.find(document, selector)
   end
 end
