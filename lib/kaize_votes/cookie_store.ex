@@ -11,7 +11,9 @@ defmodule KaizeVotes.CookieStore do
     cookie: cookie()
   }
 
-  @spec start_link(any()) :: GenServer.on_start()
+  # Client
+
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(init_arg) do
     GenServer.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
@@ -25,6 +27,8 @@ defmodule KaizeVotes.CookieStore do
   def set(value) do
     GenServer.cast(__MODULE__, {:set, value})
   end
+
+  # Server (callbacks)
 
   @impl GenServer
   @spec init(keyword()) :: {:ok, state()}

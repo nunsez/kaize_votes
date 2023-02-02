@@ -11,7 +11,7 @@ defmodule KaizeVotes.Application do
     children = [
       # Starts a worker by calling: KaizeVotes.Worker.start_link(arg)
       # {KaizeVotes.Worker, arg}
-      {KaizeVotes.CookieStore, []},
+      {KaizeVotes.CookieStore, [path: "cookie.txt"]},
       {Finch, name: MyFinch},
       {KaizeVotes.Worker, []}
     ]
