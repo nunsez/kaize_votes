@@ -37,7 +37,7 @@ defmodule KaizeVotes.Worker do
     else
       Logger.info("Unauthenticated. Try to login, count: #{try_count}")
       Process.sleep(3000)
-      KaizeVotes.Runner.login()
+      KaizeVotes.login()
       doc = first_proporsal()
       ensure_logged_in(doc, try_count + 1)
     end

@@ -21,7 +21,7 @@ defmodule KaizeVotes.Application do
     opts = [strategy: :one_for_one, name: KaizeVotes.Supervisor]
     result = Supervisor.start_link(children, opts)
 
-    KaizeVotes.Runner.call()
+    KaizeVotes.start()
     result
   end
 end
