@@ -8,13 +8,13 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Http
   alias KaizeVotes.Html
 
-  @type state :: %{
-    document: Html.document()
-  }
+  @first_proporsal "https://kaize.io/proposal/1"
+
+  @type state() :: Html.document()
 
   # Client
 
-  @spec start_link(any()) :: GenServer.on_start()
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(init_arg) do
     GenServer.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
@@ -30,7 +30,7 @@ defmodule KaizeVotes.Worker do
   @spec init(keyword()) :: {:ok, state()} | {:stop, String.t()}
   def init(_init_arg) do
     result =
-      first_proporsal()
+      fetch_document(@first_proporsal)
       |> ensure_logged_in()
 
     case result do
@@ -49,29 +49,25 @@ defmodule KaizeVotes.Worker do
     process(document)
   end
 
-  @spec ensure_logged_in(Html.document(), pos_integer()) :: {:ok, Html.document()} | {:error, String.t()}
+  @spec ensure_logged_in(Html.document(), pos_integer()) ::
+    {:ok, Html.document()} | {:error, String.t()}
   def ensure_logged_in(document, try_count \\ 1)
   def ensure_logged_in(_, 3), do: {:error, "Can not login"}
 
   def ensure_logged_in(document, try_count) do
     if Html.logged_in?(document) do
       Logger.info("Already authenticated")
+
       {:ok, document}
     else
       Logger.info("Unauthenticated. Try to login, count: #{try_count}")
-      Process.sleep(3000)
       KaizeVotes.login()
-      doc = first_proporsal()
-      ensure_logged_in(doc, try_count + 1)
+
+      Process.sleep(:timer.seconds(3))
+      new_doc = fetch_document(@first_proporsal)
+
+      ensure_logged_in(new_doc, try_count + 1)
     end
-  end
-
-  @spec first_proporsal() :: Html.document()
-  defp first_proporsal do
-    Logger.info("Getting first proporsal")
-    response = Http.get("https://kaize.io/proposal/1")
-
-    Html.parse(response.body)
   end
 
   @spec process(Html.document()) :: Html.document()
@@ -79,7 +75,10 @@ defmodule KaizeVotes.Worker do
     form = Html.find(document, "form.proposal-vote-form")
     vote_input = Html.find(form, ~s|input[name="vote"][value=""]|)
 
-    if vote_input != [], do: agree(form)
+    if vote_input != [] do
+      agree(form)
+      Process.sleep(:timer.seconds(5))
+    end
 
     new_doc = next_proporsal(document)
     process(new_doc)
@@ -92,16 +91,21 @@ defmodule KaizeVotes.Worker do
     if next_btn != [] do
       url = Html.attribute(next_btn, "href")
 
-      Logger.info("Getting proporsal: #{url}")
-      response = Http.get(url)
-
-      Html.parse(response.body)
+      fetch_document(url)
     else
       Logger.info("There are no remaining proporsals, wait")
       Process.sleep(:timer.minutes(5))
 
-      first_proporsal()
+      fetch_document(@first_proporsal)
     end
+  end
+
+  @spec fetch_document(String.t()) :: Html.document()
+  def fetch_document(url) do
+    Logger.info("Getting proporsal: #{url}")
+    response = Http.get(url)
+
+    Html.parse(response.body)
   end
 
   @spec agree(Html.document()) :: :ok
@@ -109,8 +113,9 @@ defmodule KaizeVotes.Worker do
     url = Html.attribute(form, "action")
 
     Logger.info("Voting up")
-    Http.post(url, agree_data(form)) # vote up
-    Process.sleep(5 * 1000)
+    Http.post(url, agree_data(form))
+
+    :ok
   end
 
   @spec agree_data(Html.document()) :: map()
