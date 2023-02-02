@@ -8,17 +8,39 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Http
   alias KaizeVotes.Html
 
+  @type state :: %{
+    document: Html.document()
+  }
+
+  # Client
+
+  @spec start_link(any()) :: GenServer.on_start()
   def start_link(init_arg) do
     GenServer.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
+  @spec start() :: :ok
+  def start do
+    GenServer.cast(__MODULE__, :start)
+  end
+
+  # Server (callbacks)
+
   @impl GenServer
+  @spec init(keyword()) :: {:ok, state()} | {:stop, String.t()}
   def init(_init_arg) do
     result =
       first_proporsal()
       |> ensure_logged_in()
 
-    result
+    case result do
+      {:ok, document} ->
+        state = %{ document: document }
+        {:ok, state}
+
+      {:error, reason} ->
+        {:stop, reason}
+    end
   end
 
   @impl GenServer
@@ -27,6 +49,7 @@ defmodule KaizeVotes.Worker do
     process(document)
   end
 
+  @spec ensure_logged_in(Html.document(), pos_integer()) :: {:ok, Html.document()} | {:error, String.t()}
   def ensure_logged_in(document, try_count \\ 1)
   def ensure_logged_in(_, 3), do: {:error, "Can not login"}
 
@@ -43,55 +66,62 @@ defmodule KaizeVotes.Worker do
     end
   end
 
+  @spec first_proporsal() :: Html.document()
   defp first_proporsal do
-    Logger.info("first_proporsal")
+    Logger.info("Getting first proporsal")
     response = Http.get("https://kaize.io/proposal/1")
+
     Html.parse(response.body)
   end
 
+  @spec process(Html.document()) :: Html.document()
   def process(document) do
-    vote_input = Html.find(document, ~s|form.proposal-vote-form input[name="vote"][value=""]|)
+    form = Html.find(document, "form.proposal-vote-form")
+    vote_input = Html.find(form, ~s|input[name="vote"][value=""]|)
 
-    new_doc =
-      if vote_input != [] do
-        agree(document)
-      else
-        next_proporsal(document)
-      end
+    if vote_input != [], do: agree(form)
 
+    new_doc = next_proporsal(document)
     process(new_doc)
   end
 
+  @spec next_proporsal(Html.document()) :: Html.document()
   def next_proporsal(document) do
-    Logger.info("next_proporsal")
     next_btn = Html.find(document, "a.next-proposal")
 
     if next_btn != [] do
       url = Html.attribute(next_btn, "href")
-      response = Http.get(url) # get next proporsal
+
+      Logger.info("Getting proporsal: #{url}")
+      response = Http.get(url)
+
       Html.parse(response.body)
     else
-      Process.sleep(5 * 60 * 1000) # wait new proporsals
+      Logger.info("There are no remaining proporsals, wait")
+      Process.sleep(:timer.minutes(5))
+
       first_proporsal()
     end
   end
 
-  def agree(document) do
-    Logger.info("agree")
-    form = Html.find(document, "form.proposal-vote-form")
+  @spec agree(Html.document()) :: :ok
+  def agree(form) do
     url = Html.attribute(form, "action")
-    token_element = Html.find(document, ~s|form.proposal-vote-form input[name="_token"]|)
-    token = Html.attribute(token_element, "value")
-    data = %{
+
+    Logger.info("Voting up")
+    Http.post(url, agree_data(form)) # vote up
+    Process.sleep(5 * 1000)
+  end
+
+  @spec agree_data(Html.document()) :: map()
+  defp agree_data(form) do
+    token = Html.attribute(form, ~s|input[name="_token"]|, "value")
+
+    %{
       _token: token,
       comment: "",
       vote: "up",
       vote_id: ""
     }
-
-    Http.post(url, data) # vote up
-    Process.sleep(5 * 1000)
-
-    next_proporsal(document)
   end
 end
