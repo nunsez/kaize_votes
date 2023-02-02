@@ -53,7 +53,7 @@ defmodule KaizeVotes.Worker do
     vote_input = Html.find(document, ~s|form.proposal-vote-form input[name="vote"][value=""]|)
 
     new_doc =
-      if vote_input do
+      if vote_input != [] do
         agree(document)
       else
         next_proporsal(document)
@@ -66,7 +66,7 @@ defmodule KaizeVotes.Worker do
     Logger.info("next_proporsal")
     next_btn = Html.find(document, "a.next-proposal")
 
-    if next_btn do
+    if next_btn != [] do
       url = Html.attribute(next_btn, "href")
       response = Http.get(url) # get next proporsal
       Html.parse(response.body)
