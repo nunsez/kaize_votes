@@ -19,16 +19,18 @@ defmodule KaizeVotes.Html do
   end
 
   @spec attribute(document(), String.t()) :: String.t() | nil
-  def attribute([node | _], name) do
-    attribute(node, name)
+  def attribute(document, name) do
+    case Floki.attribute(document, name) do
+      [value | _] -> value
+      _ -> nil
+    end
   end
 
-  def attribute({_, attributes, _}, name) when is_list(attributes) do
-    attribute = Enum.find(attributes, fn({attr_name, _}) -> attr_name == name end)
-
-    case attribute do
-      nil -> nil
-      {_, value} -> value
+  @spec attribute(document(), String.t(), String.t()) :: String.t() | nil
+  def attribute(document, selector, name) do
+    case Floki.attribute(document, selector, name) do
+      [value | _] -> value
+      _ -> nil
     end
   end
 
