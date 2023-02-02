@@ -35,7 +35,7 @@ defmodule KaizeVotes.Worker do
 
     case result do
       {:ok, document} ->
-        state = %{ document: document }
+        state = document
         {:ok, state}
 
       {:error, reason} ->
