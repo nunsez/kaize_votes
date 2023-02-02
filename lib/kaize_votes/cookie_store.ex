@@ -4,9 +4,9 @@ defmodule KaizeVotes.CookieStore do
   @default_path "cookie.txt"
   @default_cookie ""
 
-  @type cookie :: String.t()
+  @type cookie() :: String.t()
 
-  @type state :: %{
+  @type state() :: %{
     path: Path.t(),
     cookie: cookie()
   }
