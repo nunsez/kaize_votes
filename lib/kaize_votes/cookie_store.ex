@@ -1,9 +1,17 @@
 defmodule KaizeVotes.CookieStore do
   use GenServer
 
-  @filepath "cookie.txt"
+  @default_path "cookie.txt"
   @default_cookie ""
 
+  @type cookie :: String.t()
+
+  @type state :: %{
+    path: Path.t(),
+    cookie: cookie()
+  }
+
+  @spec start_link(any()) :: GenServer.on_start()
   def start_link(init_arg) do
     GenServer.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
@@ -19,31 +27,48 @@ defmodule KaizeVotes.CookieStore do
   end
 
   @impl GenServer
-  def init(_init_arg) do
-    ensure_store_exists()
+  @spec init(keyword()) :: {:ok, state()}
+  def init(init_arg) do
+    path = init_arg[:path] || @default_path
+    ensure_store_exists(path)
 
-    value =
-      @filepath
-      |> File.read!()
-      |> String.trim()
+    state = %{ path: path, cookie: read_cookie(path) }
 
-    {:ok, value}
+    {:ok, state}
   end
 
   @impl GenServer
   def handle_call(:get, _from, state) do
-    {:reply, state, state}
+    %{cookie: cookie} = state
+
+    {:reply, cookie, state}
   end
 
   @impl GenServer
-  def handle_cast({:set, new_value}, _state) do
-    File.write!(@filepath, new_value)
-    {:noreply, new_value}
+  def handle_cast({:set, new_cookie}, state) do
+    new_state = %{state | cookie: new_cookie}
+    save_cookie(new_state.cookie, new_state.path)
+
+    {:noreply, new_state}
   end
 
-  defp ensure_store_exists do
-    unless File.exists?(@filepath) do
-      File.write!(@filepath, @default_cookie)
+  @spec ensure_store_exists(Path.t()) :: :ok
+  defp ensure_store_exists(filepath) do
+    case File.exists?(filepath) do
+      true -> :ok
+      _ -> File.write!(filepath, @default_cookie)
     end
+  end
+
+  @spec save_cookie(cookie(), Path.t()) :: :ok
+  defp save_cookie(cookie, path) do
+    File.write!(path, cookie)
+  end
+
+  @spec read_cookie(Path.t()) :: cookie()
+  defp read_cookie(path) do
+    path
+    |> File.read!()
+    |> String.trim()
   end
 end
