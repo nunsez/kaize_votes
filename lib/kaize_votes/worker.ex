@@ -24,14 +24,20 @@ defmodule KaizeVotes.Worker do
   @impl GenServer
   @spec init(keyword()) :: {:ok, state()} | {:stop, String.t()}
   def init(_init_arg) do
+    reset()
+
+    {:ok, []}
+  end
+
+  @impl GenServer
+  def handle_info(:reset, _document) do
     new_doc = fetch_document(@first_proposal)
 
     iter()
 
-    {:ok, new_doc}
+    {:noreply, new_doc}
   end
 
-  @impl GenServer
   def handle_info(:iter, document) do
     cond do
       Html.can_vote?(document) ->
@@ -45,7 +51,7 @@ defmodule KaizeVotes.Worker do
 
       true ->
         Logger.info("There are no other proposals, waiting for new ones")
-        iter(:timer.minutes(5))
+        reset(:timer.minutes(5))
     end
 
     {:noreply, document}
@@ -82,6 +88,13 @@ defmodule KaizeVotes.Worker do
   @spec iter(timeout()) :: :ok
   defp iter(timeout \\ 1_000) do
     Process.send_after(self(), :iter, timeout)
+
+    :ok
+  end
+
+  @spec reset(timeout()) :: :ok
+  defp reset(timeout \\ 1_000) do
+    Process.send_after(self(), :reset, timeout)
 
     :ok
   end
