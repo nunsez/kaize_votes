@@ -1,4 +1,6 @@
 defmodule KaizeVotes.Json do
+  @moduledoc false
+
   @spec parse(String.t()) :: any()
   def parse(json) do
     Jason.decode!(json)

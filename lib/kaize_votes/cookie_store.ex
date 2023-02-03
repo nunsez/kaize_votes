@@ -1,4 +1,6 @@
 defmodule KaizeVotes.CookieStore do
+  @moduledoc false
+
   use GenServer
 
   @default_path "cookie.txt"

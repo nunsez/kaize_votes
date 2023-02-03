@@ -1,4 +1,6 @@
 defmodule KaizeVotes.Http do
+  @moduledoc false
+
   alias KaizeVotes.CookieStore
   alias KaizeVotes.Json
 
