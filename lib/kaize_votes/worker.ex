@@ -5,7 +5,6 @@ defmodule KaizeVotes.Worker do
 
   require Logger
 
-  alias KaizeVotes.Http
   alias KaizeVotes.Html
 
   @first_proposal "https://kaize.io/proposal/1"
@@ -31,7 +30,7 @@ defmodule KaizeVotes.Worker do
 
   @impl GenServer
   def handle_info(:reset, _document) do
-    new_doc = fetch_document(@first_proposal)
+    new_doc = KaizeVotes.fetch_document(@first_proposal)
 
     iter()
 
@@ -57,20 +56,16 @@ defmodule KaizeVotes.Worker do
     {:noreply, document}
   end
 
-  def handle_info(:login, _document) do
-    Logger.info("Logging in")
+  def handle_info(:login, document) do
     KaizeVotes.login()
 
-    :timer.sleep(1_000)
-    new_doc = fetch_document(@first_proposal)
+    reset()
 
-    iter()
-
-    {:noreply, new_doc}
+    {:noreply, document}
   end
 
   def handle_info(:next, document) do
-    new_doc = next(document)
+    new_doc = KaizeVotes.next(document)
 
     iter()
 
@@ -78,7 +73,7 @@ defmodule KaizeVotes.Worker do
   end
 
   def handle_info(:vote, document) do
-    new_doc = vote_up(document)
+    new_doc = KaizeVotes.vote_up(document)
 
     iter()
 
@@ -97,32 +92,5 @@ defmodule KaizeVotes.Worker do
     Process.send_after(self(), :reset, timeout)
 
     :ok
-  end
-
-  @spec vote_up(Html.document()) :: Html.document()
-  defp vote_up(document) do
-    form = Html.find(document, "form.proposal-vote-form")
-    url = Html.attribute(form, "action")
-
-    Logger.info("Voting up")
-    Http.post(url, Html.agree_data(form))
-
-    selector = ~s{form.proposal-vote-form input[name="vote"]}
-    Html.attr(document, selector, "value", fn(_) -> "1" end)
-  end
-
-  @spec next(Html.document()) :: Html.document()
-  defp next(document) do
-    document
-    |> Html.attribute("a.next-proposal", "href")
-    |> fetch_document()
-  end
-
-  @spec fetch_document(String.t()) :: Html.document()
-  def fetch_document(url) do
-    Logger.info("Getting a proposal: #{url}")
-    response = Http.get(url)
-
-    Html.parse(response.body)
   end
 end
