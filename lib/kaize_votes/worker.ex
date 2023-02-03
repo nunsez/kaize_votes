@@ -8,7 +8,7 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Http
   alias KaizeVotes.Html
 
-  @first_proporsal "https://kaize.io/proposal/1"
+  @first_proposal "https://kaize.io/proposal/1"
 
   @type state() :: Html.document()
 
@@ -19,114 +19,97 @@ defmodule KaizeVotes.Worker do
     GenServer.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
-  @spec start() :: :ok
-  def start do
-    GenServer.cast(__MODULE__, :start)
-  end
-
   # Server (callbacks)
 
   @impl GenServer
   @spec init(keyword()) :: {:ok, state()} | {:stop, String.t()}
   def init(_init_arg) do
-    result =
-      fetch_document(@first_proporsal)
-      |> ensure_logged_in()
+    new_doc = fetch_document(@first_proposal)
 
-    case result do
-      {:ok, document} ->
-        state = document
-        {:ok, state}
+    iter()
 
-      {:error, reason} ->
-        {:stop, reason}
-    end
+    {:ok, new_doc}
   end
 
   @impl GenServer
-  def handle_cast(:start, document) do
-    Process.send_after(self(), :started, 1_000)
-    process(document)
-  end
+  def handle_info(:iter, document) do
+    cond do
+      Html.can_vote?(document) ->
+        Process.send_after(self(), :vote, :timer.seconds(5))
 
-  @spec ensure_logged_in(Html.document(), pos_integer()) ::
-    {:ok, Html.document()} | {:error, String.t()}
-  def ensure_logged_in(document, try_count \\ 1)
-  def ensure_logged_in(_, 3), do: {:error, "Can not login"}
+      Html.can_next?(document) ->
+        Process.send_after(self(), :next, :timer.seconds(2))
 
-  def ensure_logged_in(document, try_count) do
-    if Html.logged_in?(document) do
-      Logger.info("Already authenticated")
+      Html.logged_out?(document) ->
+        Process.send_after(self(), :login, :timer.seconds(3))
 
-      {:ok, document}
-    else
-      Logger.info("Unauthenticated. Try to login, count: #{try_count}")
-      KaizeVotes.login()
-
-      Process.sleep(:timer.seconds(3))
-      new_doc = fetch_document(@first_proporsal)
-
-      ensure_logged_in(new_doc, try_count + 1)
-    end
-  end
-
-  @spec process(Html.document()) :: Html.document()
-  def process(document) do
-    form = Html.find(document, "form.proposal-vote-form")
-    vote_input = Html.find(form, ~s|input[name="vote"][value=""]|)
-
-    if vote_input != [] do
-      agree(form)
-      Process.sleep(:timer.seconds(5))
+      true ->
+        Logger.info("There are no other proposals, waiting for new ones")
+        iter(:timer.minutes(5))
     end
 
-    new_doc = next_proporsal(document)
-    process(new_doc)
+    {:noreply, document}
   end
 
-  @spec next_proporsal(Html.document()) :: Html.document()
-  def next_proporsal(document) do
-    next_btn = Html.find(document, "a.next-proposal")
+  def handle_info(:login, _document) do
+    Logger.info("Logging in")
+    KaizeVotes.login()
 
-    if next_btn != [] do
-      url = Html.attribute(next_btn, "href")
+    :timer.sleep(1_000)
+    new_doc = fetch_document(@first_proposal)
 
-      fetch_document(url)
-    else
-      Logger.info("There are no remaining proporsals, wait")
-      Process.sleep(:timer.minutes(5))
+    iter()
 
-      fetch_document(@first_proporsal)
-    end
+    {:noreply, new_doc}
   end
 
-  @spec fetch_document(String.t()) :: Html.document()
-  def fetch_document(url) do
-    Logger.info("Getting proporsal: #{url}")
-    response = Http.get(url)
+  def handle_info(:next, document) do
+    new_doc = next(document)
 
-    Html.parse(response.body)
+    iter()
+
+    {:noreply, new_doc}
   end
 
-  @spec agree(Html.document()) :: :ok
-  def agree(form) do
-    url = Html.attribute(form, "action")
+  def handle_info(:vote, document) do
+    new_doc = vote_up(document)
 
-    Logger.info("Voting up")
-    Http.post(url, agree_data(form))
+    iter()
+
+    {:noreply, new_doc}
+  end
+
+  @spec iter(timeout()) :: :ok
+  defp iter(timeout \\ 1_000) do
+    Process.send_after(self(), :iter, timeout)
 
     :ok
   end
 
-  @spec agree_data(Html.document()) :: map()
-  defp agree_data(form) do
-    token = Html.attribute(form, ~s|input[name="_token"]|, "value")
+  @spec vote_up(Html.document()) :: Html.document()
+  defp vote_up(document) do
+    form = Html.find(document, "form.proposal-vote-form")
+    url = Html.attribute(form, "action")
 
-    %{
-      _token: token,
-      comment: "",
-      vote: "up",
-      vote_id: ""
-    }
+    Logger.info("Voting up")
+    Http.post(url, Html.agree_data(form))
+
+    selector = ~s{form.proposal-vote-form input[name="vote"]}
+    Html.attr(document, selector, "value", fn(_) -> "1" end)
+  end
+
+  @spec next(Html.document()) :: Html.document()
+  defp next(document) do
+    document
+    |> Html.attribute("a.next-proposal", "href")
+    |> fetch_document()
+  end
+
+  @spec fetch_document(String.t()) :: Html.document()
+  def fetch_document(url) do
+    Logger.info("Getting a proposal: #{url}")
+    response = Http.get(url)
+
+    Html.parse(response.body)
   end
 end

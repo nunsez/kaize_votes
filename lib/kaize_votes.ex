@@ -5,12 +5,6 @@ defmodule KaizeVotes do
 
   alias KaizeVotes.Html
   alias KaizeVotes.Http
-  alias KaizeVotes.Worker
-
-  @spec start() :: :ok
-  def start do
-    Worker.start()
-  end
 
   @spec login() :: Http.response()
   def login do
