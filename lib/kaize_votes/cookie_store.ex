@@ -38,7 +38,7 @@ defmodule KaizeVotes.CookieStore do
     path = init_arg[:path] || @default_path
     ensure_store_exists(path)
 
-    state = %{ path: path, cookie: read_cookie(path) }
+    state = %{path: path, cookie: read_cookie(path)}
 
     {:ok, state}
   end
