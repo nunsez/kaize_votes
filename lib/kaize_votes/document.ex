@@ -10,10 +10,7 @@ defmodule KaizeVotes.Document do
   def can_next?(document) do
     url = Html.attribute(document, "a.next-proposal", "href")
 
-    case url do
-      s when is_binary(s) -> String.trim(s) != ""
-      _ -> false
-    end
+    is_binary(url) and String.trim(url) != ""
   end
 
   @spec next(Html.document()) :: Html.document()
