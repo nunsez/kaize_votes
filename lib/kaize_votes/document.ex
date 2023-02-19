@@ -8,7 +8,7 @@ defmodule KaizeVotes.Document do
 
   @spec can_next?(Html.document()) :: boolean()
   def can_next?(document) do
-    url = Html.attribute(document, "a.next-proposal", "href")
+    url = next_url(document)
 
     is_binary(url) and String.trim(url) != ""
   end
@@ -16,8 +16,13 @@ defmodule KaizeVotes.Document do
   @spec next(Html.document()) :: Html.document()
   def next(document) do
     document
-    |> Html.attribute("a.next-proposal", "href")
+    |> next_url()
     |> fetch_document()
+  end
+
+  @spec next_url(Html.document()) :: String.t() | nil
+  defp next_url(document) do
+    Html.attribute(document, "a.next-proposal", "href")
   end
 
   @spec fetch_document(String.t()) :: Html.document()
