@@ -8,6 +8,7 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Document
   alias KaizeVotes.Html
   alias KaizeVotes.Login
+  alias KaizeVotes.Votable
   alias KaizeVotes.Vote
 
   @first_proposal "https://kaize.io/proposal/1"
@@ -42,8 +43,11 @@ defmodule KaizeVotes.Worker do
 
   def handle_info(:iter, document) do
     cond do
-      Html.can_vote?(document) ->
-        Process.send_after(self(), :vote, :timer.seconds(5))
+      Votable.can_vote_down?(document) ->
+        Process.send_after(self(), :vote_down, :timer.seconds(5))
+
+      Votable.can_vote_up?(document) ->
+        Process.send_after(self(), :vote_up, :timer.seconds(5))
 
       Document.can_next?(document) ->
         Process.send_after(self(), :next, :timer.seconds(2))
@@ -75,7 +79,15 @@ defmodule KaizeVotes.Worker do
     {:noreply, new_doc}
   end
 
-  def handle_info(:vote, document) do
+  def handle_info(:vote_down, document) do
+    new_doc = Vote.down(document)
+
+    iter()
+
+    {:noreply, new_doc}
+  end
+
+  def handle_info(:vote_up, document) do
     new_doc = Vote.up(document)
 
     iter()

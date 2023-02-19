@@ -5,17 +5,6 @@ defmodule KaizeVotes.Html do
   @type html_node() :: Floki.html_node()
   @type document() :: html_tree() | html_node()
 
-  @spec can_vote?(document()) :: boolean()
-  def can_vote?(document) do
-    selector = ~s{form.proposal-vote-form input[name="vote"]}
-    input_value = attribute(document, selector, "value")
-
-    case input_value do
-      "" -> true
-      _ -> false
-    end
-  end
-
   @spec parse(String.t()) :: html_tree()
   def parse(html) do
     case Floki.parse_document(html) do
