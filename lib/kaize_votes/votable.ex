@@ -37,7 +37,7 @@ defmodule KaizeVotes.Votable do
   end
 
   @spec votable?(Html.document()) :: boolean()
-  defp votable?(document) do
+  def votable?(document) do
     selector = ~s{form.proposal-vote-form input[name="vote"]}
     input_value = Html.attribute(document, selector, "value")
 
