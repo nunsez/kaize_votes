@@ -34,10 +34,6 @@ USER dev
 
 ENV PROJECT_ROOT="/app"
 
-# Install hex + rebar
-# ENV MIX_HOME="${PROJECT_ROOT}/.mix"
-# RUN mix local.hex --force && \
-#     mix local.rebar --force
 ENV MIX_HOME="${PROJECT_ROOT}/.mix"
 
 # Bash history
