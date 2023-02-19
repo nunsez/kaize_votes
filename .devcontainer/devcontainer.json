@@ -1,0 +1,74 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	"name": "Existing Dockerfile",
+	"build": {
+		// Sets the run context to one level up instead of the .devcontainer folder.
+		"context": "..",
+		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
+		"dockerfile": "./Dockerfile"
+	},
+
+	// The optional 'workspaceFolder' property is the path VS Code should open by default when
+	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
+	// "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
+	"workspaceFolder": "/app",
+
+	"remoteEnv": {
+		"MIX_HOME": "${containerEnv:PROJECT_ROOT}/.mix"
+	},
+
+	"postCreateCommand": "mix local.hex --force && mix local.rebar --force",
+	
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Uncomment the next line to run commands after the container is created.
+	// "postCreateCommand": "cat /etc/os-release",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"formulahendry.auto-rename-tag",
+				"aaron-bond.better-comments",
+				"pantajoe.vscode-elixir-credo",
+				"editorconfig.editorconfig",
+				"jakebecker.elixir-ls",
+				"mrorz.language-gettext",
+				"dbaeumer.vscode-eslint",
+				"waderyan.gitblame",
+				"eamodio.gitlens",
+				"oderwat.indent-rainbow",
+				"visualstudioexptteam.vscodeintellic",
+				"christian-kohler.path-intellisense",
+				"timonwong.shellcheck",
+				"stylelint.vscode-stylelint",
+				"gruntfuggly.todo-tree",
+				"wakatime.vscode-wakatime"
+			],
+			"settings": {
+				"css.validate": false,
+				"less.validate": false,
+				"scss.validate": false,
+				"stylelint.validate": ["css", "scss"]
+			}
+		}
+	},
+
+	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "dev",
+
+	"mounts": [
+		{
+			"source": "${localEnv:HOME}/.wakatime.cfg",
+			"target": "/home/dev/.wakatime.cfg",
+			"type": "bind"
+		}
+	]
+}

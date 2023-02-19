@@ -26,3 +26,5 @@ kaize_votes-*.tar
 /tmp/
 
 /cookie.txt
+
+/.mix/
