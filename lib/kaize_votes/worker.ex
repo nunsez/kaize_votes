@@ -8,6 +8,7 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Document
   alias KaizeVotes.Html
   alias KaizeVotes.Login
+  alias KaizeVotes.Vote
 
   @first_proposal "https://kaize.io/proposal/1"
 
@@ -75,7 +76,7 @@ defmodule KaizeVotes.Worker do
   end
 
   def handle_info(:vote, document) do
-    new_doc = KaizeVotes.vote_up(document)
+    new_doc = Vote.up(document)
 
     iter()
 
