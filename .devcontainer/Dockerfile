@@ -36,6 +36,9 @@ ENV PROJECT_ROOT="/app"
 
 ENV MIX_HOME="${PROJECT_ROOT}/.mix"
 
+# Erlang save history
+ENV ERL_AFLAGS="-kernel shell_history enabled -kernel shell_history_path '\"${PROJECT_ROOT}/tmp/.erl_history\"'"
+
 # Bash history
 ENV HISTFILE="${PROJECT_ROOT}/tmp/.bash_history"
 # ignorespace + ignoredups
