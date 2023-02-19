@@ -16,28 +16,6 @@ defmodule KaizeVotes.Html do
     end
   end
 
-  @spec can_next?(document()) :: boolean()
-  def can_next?(document) do
-    url = attribute(document, "a.next-proposal", "href")
-
-    case url do
-      s when is_binary(s) -> String.trim(s) != ""
-      _ -> false
-    end
-  end
-
-  @spec agree_data(document()) :: map()
-  def agree_data(form) do
-    token = attribute(form, ~s|input[name="_token"]|, "value")
-
-    %{
-      _token: token,
-      comment: "",
-      vote: "up",
-      vote_id: ""
-    }
-  end
-
   @spec parse(String.t()) :: html_tree()
   def parse(html) do
     case Floki.parse_document(html) do

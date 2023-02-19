@@ -19,19 +19,4 @@ defmodule KaizeVotes do
     selector = ~s{form.proposal-vote-form input[name="vote"]}
     Html.attr(document, selector, "value", fn(_) -> "1" end)
   end
-
-  @spec next(Html.document()) :: Html.document()
-  def next(document) do
-    document
-    |> Html.attribute("a.next-proposal", "href")
-    |> fetch_document()
-  end
-
-  @spec fetch_document(String.t()) :: Html.document()
-  def fetch_document(url) do
-    Logger.info("Getting a proposal: #{url}")
-    response = Http.get(url)
-
-    Html.parse(response.body)
-  end
 end

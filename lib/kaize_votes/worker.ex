@@ -5,6 +5,7 @@ defmodule KaizeVotes.Worker do
 
   require Logger
 
+  alias KaizeVotes.Document
   alias KaizeVotes.Html
   alias KaizeVotes.Login
 
@@ -31,7 +32,7 @@ defmodule KaizeVotes.Worker do
 
   @impl GenServer
   def handle_info(:reset, _document) do
-    new_doc = KaizeVotes.fetch_document(@first_proposal)
+    new_doc = Document.fetch_document(@first_proposal)
 
     iter()
 
@@ -43,7 +44,7 @@ defmodule KaizeVotes.Worker do
       Html.can_vote?(document) ->
         Process.send_after(self(), :vote, :timer.seconds(5))
 
-      Html.can_next?(document) ->
+      Document.can_next?(document) ->
         Process.send_after(self(), :next, :timer.seconds(2))
 
       Login.logged_out?(document) ->
@@ -66,7 +67,7 @@ defmodule KaizeVotes.Worker do
   end
 
   def handle_info(:next, document) do
-    new_doc = KaizeVotes.next(document)
+    new_doc = Document.next(document)
 
     iter()
 
