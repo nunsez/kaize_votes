@@ -5,16 +5,6 @@ defmodule KaizeVotes.Html do
   @type html_node() :: Floki.html_node()
   @type document() :: html_tree() | html_node()
 
-  @spec logged_in?(document()) :: boolean()
-  def logged_in?(document) do
-    find(document, "header .right > .account") != []
-  end
-
-  @spec logged_out?(document()) :: boolean()
-  def logged_out?(document) do
-    not logged_in?(document)
-  end
-
   @spec can_vote?(document()) :: boolean()
   def can_vote?(document) do
     selector = ~s{form.proposal-vote-form input[name="vote"]}

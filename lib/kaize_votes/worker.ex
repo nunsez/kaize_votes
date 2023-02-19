@@ -6,6 +6,7 @@ defmodule KaizeVotes.Worker do
   require Logger
 
   alias KaizeVotes.Html
+  alias KaizeVotes.Login
 
   @first_proposal "https://kaize.io/proposal/1"
 
@@ -45,7 +46,7 @@ defmodule KaizeVotes.Worker do
       Html.can_next?(document) ->
         Process.send_after(self(), :next, :timer.seconds(2))
 
-      Html.logged_out?(document) ->
+      Login.logged_out?(document) ->
         Process.send_after(self(), :login, :timer.seconds(3))
 
       true ->
@@ -57,7 +58,7 @@ defmodule KaizeVotes.Worker do
   end
 
   def handle_info(:login, document) do
-    KaizeVotes.login()
+    Login.login()
 
     reset()
 
