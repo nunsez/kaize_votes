@@ -16,10 +16,6 @@
 	"workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
 	"workspaceFolder": "/app",
 
-	"remoteEnv": {
-		"MIX_HOME": "${containerEnv:PROJECT_ROOT}/.mix"
-	},
-
 	"postCreateCommand": "mix local.hex --force && mix local.rebar --force",
 	
 	// Features to add to the dev container. More info: https://containers.dev/features.

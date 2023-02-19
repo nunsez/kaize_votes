@@ -38,6 +38,7 @@ ENV PROJECT_ROOT="/app"
 # ENV MIX_HOME="${PROJECT_ROOT}/.mix"
 # RUN mix local.hex --force && \
 #     mix local.rebar --force
+ENV MIX_HOME="${PROJECT_ROOT}/.mix"
 
 # Bash history
 ENV HISTFILE="${PROJECT_ROOT}/tmp/.bash_history"
