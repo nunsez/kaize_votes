@@ -1,0 +1,9 @@
+alias KaizeVotes.CookieStore
+alias KaizeVotes.Document
+alias KaizeVotes.Html
+alias KaizeVotes.Http
+alias KaizeVotes.Json
+alias KaizeVotes.Login
+alias KaizeVotes.Votable
+alias KaizeVotes.Vote
+alias KaizeVotes.Worker
