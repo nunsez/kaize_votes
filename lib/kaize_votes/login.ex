@@ -6,6 +6,8 @@ defmodule KaizeVotes.Login do
   alias KaizeVotes.Html
   alias KaizeVotes.Http
 
+  @login_url "https://kaize.io/login"
+
   @spec logged_in?(Html.document()) :: boolean()
   def logged_in?(document) do
     Html.find(document, "header .right > .account") != []
@@ -19,7 +21,7 @@ defmodule KaizeVotes.Login do
   @spec login() :: Http.response()
   def login do
     Logger.info("Logging in")
-    Http.post("https://kaize.io/login", login_data())
+    Http.post(@login_url, login_data())
   end
 
   @spec login_data() :: map()
@@ -34,7 +36,7 @@ defmodule KaizeVotes.Login do
 
   @spec auth_token() :: String.t()
   defp auth_token do
-    response = Http.get("https://kaize.io/login")
+    response = Http.get(@login_url)
     document = Html.parse(response.body)
     token_node = Html.find(document, "form.auth-form > input[name=\"_token\"]")
 
