@@ -7,3 +7,6 @@ ARGS = $(filter-out $@, $(MAKECMDGOALS))
 
 c:
 	docker exec -it $(shell docker container ls | grep vsc-kaize_votes | cut --delimiter=' ' --fields=1 | head --lines=1) /bin/bash
+
+iex:
+	iex -S mix
