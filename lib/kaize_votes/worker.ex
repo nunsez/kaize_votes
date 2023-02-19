@@ -49,7 +49,7 @@ defmodule KaizeVotes.Worker do
       Votable.can_vote_up?(document) ->
         Process.send_after(self(), :vote_up, :timer.seconds(5))
 
-      Document.can_next?(document) ->
+      Document.has_next_url?(document) ->
         Process.send_after(self(), :next, :timer.seconds(2))
 
       Login.logged_out?(document) ->

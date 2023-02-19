@@ -6,8 +6,8 @@ defmodule KaizeVotes.Document do
   alias KaizeVotes.Html
   alias KaizeVotes.Http
 
-  @spec can_next?(Html.document()) :: boolean()
-  def can_next?(document) do
+  @spec has_next_url?(Html.document()) :: boolean()
+  def has_next_url?(document) do
     url = next_url(document)
 
     is_binary(url) and String.trim(url) != ""
