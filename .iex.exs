@@ -4,6 +4,7 @@ alias KaizeVotes.Html
 alias KaizeVotes.Http
 alias KaizeVotes.Json
 alias KaizeVotes.Login
+alias KaizeVotes.Timeout
 alias KaizeVotes.Votable
 alias KaizeVotes.Vote
 alias KaizeVotes.Worker

@@ -8,6 +8,7 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Document
   alias KaizeVotes.Html
   alias KaizeVotes.Login
+  alias KaizeVotes.Timeout
   alias KaizeVotes.Votable
   alias KaizeVotes.Vote
 
@@ -44,20 +45,20 @@ defmodule KaizeVotes.Worker do
   def handle_info(:iter, document) do
     cond do
       Votable.can_vote_down?(document) ->
-        Process.send_after(self(), :vote_down, :timer.seconds(5))
+        Process.send_after(self(), :vote_down, Timeout.before_vote)
 
       Votable.can_vote_up?(document) ->
-        Process.send_after(self(), :vote_up, :timer.seconds(5))
+        Process.send_after(self(), :vote_up, Timeout.before_vote)
 
       not Votable.votable?(document) and Document.has_next_url?(document)  ->
-        Process.send_after(self(), :next, :timer.seconds(2))
+        Process.send_after(self(), :next, Timeout.before_next)
 
       Login.logged_out?(document) ->
-        Process.send_after(self(), :login, :timer.seconds(3))
+        Process.send_after(self(), :login, Timeout.before_login)
 
       true ->
         Logger.info("There are no other proposals, waiting for new ones")
-        reset(:timer.minutes(5))
+        reset(Timeout.wait_new_proposals)
     end
 
     {:noreply, document}
@@ -95,15 +96,21 @@ defmodule KaizeVotes.Worker do
     {:noreply, new_doc}
   end
 
+  @spec iter() :: :ok
+  defp iter, do: iter(Timeout.iteration)
+
   @spec iter(timeout()) :: :ok
-  defp iter(timeout \\ 1_000) do
+  defp iter(timeout) do
     Process.send_after(self(), :iter, timeout)
 
     :ok
   end
 
+  @spec reset() :: :ok
+  defp reset, do: reset(Timeout.iteration)
+
   @spec reset(timeout()) :: :ok
-  defp reset(timeout \\ 1_000) do
+  defp reset(timeout) do
     Process.send_after(self(), :reset, timeout)
 
     :ok
