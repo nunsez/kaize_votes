@@ -21,6 +21,16 @@ defmodule KaizeVotes.Timeout do
     rand(:timer.minutes(15), :timer.minutes(25))
   end
 
+  @spec wait_untill(NaiveDateTime.t(), Time.t()) :: non_neg_integer()
+  def wait_untill(current, start_work) do
+    tomorroww = Date.add(Date.utc_today(), 1)
+    {:ok, next_work_start} = NaiveDateTime.new(tomorroww, start_work)
+
+    next_work_start
+    |> NaiveDateTime.diff(current, :second)
+    |> :timer.seconds()
+  end
+
   @doc """
   Must be at least 1 second
   """

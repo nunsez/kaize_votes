@@ -12,6 +12,9 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Votable
   alias KaizeVotes.Vote
 
+  @start_work ~T[02:00:00]
+  @end_work ~T[16:00:00]
+
   @first_proposal "https://kaize.io/proposal/1"
 
   @type state() :: Html.document()
@@ -53,12 +56,21 @@ defmodule KaizeVotes.Worker do
       Votable.can_next?(document)  ->
         Process.send_after(self(), :next, Timeout.before_next)
 
+      Votable.rest_time?(@start_work, @end_work) ->
+        Logger.info("Time to rest. Waiting for a new work day")
+
+        NaiveDateTime.utc_now()
+        |> Timeout.wait_untill(@start_work)
+        |> reset()
+
       Login.logged_out?(document) ->
         Process.send_after(self(), :login, Timeout.before_login)
 
       true ->
         Logger.info("There are no other proposals, waiting for new ones")
-        reset(Timeout.wait_new_proposals)
+
+        Timeout.wait_new_proposals
+        |> reset()
     end
 
     {:noreply, document}
