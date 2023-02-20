@@ -28,4 +28,10 @@ defmodule KaizeVotes.Timeout do
   def iteration do
     :timer.seconds(1)
   end
+
+  # Returns a random number between min (included) and max (excluded)
+  @spec rand(integer(), integer()) :: integer()
+  defp rand(min, max) do
+    :erlang.floor(min + :rand.uniform() * (max - min))
+  end
 end
