@@ -1,46 +1,27 @@
 defmodule KaizeVotes.Votable do
   @moduledoc false
 
+  alias KaizeVotes.Document
   alias KaizeVotes.Html
 
   @spec can_vote_down?(Html.document()) :: boolean()
   def can_vote_down?(document) do
-    votable?(document) and enough_down_votes?(document)
-  end
-
-  @vote_down_threshold 3
-
-  @spec enough_down_votes?(Html.document()) :: boolean()
-  defp enough_down_votes?(document) do
-    count =
-      document
-      |> Html.find(".proposal-user-vote .choice.down")
-      |> Enum.count()
-
-    count >= @vote_down_threshold
+    Document.votable?(document) and Document.enough_down_votes?(document)
   end
 
   @spec can_vote_up?(Html.document()) :: boolean()
   def can_vote_up?(document) do
-    votable?(document) and enough_up_votes?(document)
+    Document.votable?(document) and Document.enough_up_votes?(document)
   end
 
-  @vote_up_threshold 3
-
-  defp enough_up_votes?(document) do
-    count =
-      document
-      |> Html.find(".proposal-user-vote .choice.up")
-      |> Enum.count()
-
-    count >= @vote_up_threshold
+  @spec can_next?(Html.document()) :: boolean()
+  def can_next?(document) do
+    not Document.votable?(document) and
+      Document.has_next_url?(document)
   end
 
-  @spec votable?(Html.document()) :: boolean()
-  def votable?(document) do
-    selector = ~s{form.proposal-vote-form input[name="vote"]}
-    input_value = Html.attribute(document, selector, "value")
+  end
 
-    input_value == ""
+
   end
 end

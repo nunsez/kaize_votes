@@ -25,6 +25,38 @@ defmodule KaizeVotes.Document do
     Html.attribute(document, "a.next-proposal", "href")
   end
 
+  @vote_down_threshold 3
+
+  @spec enough_down_votes?(Html.document()) :: boolean()
+  def enough_down_votes?(document) do
+    count =
+      document
+      |> Html.find(".proposal-user-vote .choice.down")
+      |> Enum.count()
+
+    count >= @vote_down_threshold
+  end
+
+  @vote_up_threshold 3
+
+  @spec enough_up_votes?(Html.document()) :: boolean()
+  def enough_up_votes?(document) do
+    count =
+      document
+      |> Html.find(".proposal-user-vote .choice.up")
+      |> Enum.count()
+
+    count >= @vote_up_threshold
+  end
+
+  @spec votable?(Html.document()) :: boolean()
+  def votable?(document) do
+    selector = ~s{form.proposal-vote-form input[name="vote"]}
+    input_value = Html.attribute(document, selector, "value")
+
+    input_value == ""
+  end
+
   @spec fetch_document(String.t()) :: Html.document()
   def fetch_document(url) do
     Logger.info("Getting a proposal: #{url}")

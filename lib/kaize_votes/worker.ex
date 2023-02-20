@@ -50,7 +50,7 @@ defmodule KaizeVotes.Worker do
       Votable.can_vote_up?(document) ->
         Process.send_after(self(), :vote_up, Timeout.before_vote)
 
-      not Votable.votable?(document) and Document.has_next_url?(document)  ->
+      Votable.can_next?(document)  ->
         Process.send_after(self(), :next, Timeout.before_next)
 
       Login.logged_out?(document) ->
