@@ -2,7 +2,6 @@ defmodule KaizeVotes.JsonTest do
   use ExUnit.Case, async: true
   doctest KaizeVotes.Json
 
-  alias Kernel.ErrorHandler
   alias KaizeVotes.Json
 
   describe "optimistic cases" do
