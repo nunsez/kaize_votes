@@ -7,7 +7,8 @@ defmodule KaizeVotes.CookieStoreTest do
   alias KaizeVotes.CookieStore
 
   describe "init/1" do
-    @tag :tmp_dir
+    @describetag :tmp_dir
+
     test "starts successfully when custom path exists", %{tmp_dir: tmp_dir} do
       path = Path.join(tmp_dir, "test_store")
       {:ok, _} = CookieStore.init(path: path)
@@ -15,7 +16,6 @@ defmodule KaizeVotes.CookieStoreTest do
       assert File.exists?(path)
     end
 
-    @tag :tmp_dir
     test "starts successfully when custom path not exists", %{tmp_dir: tmp_dir} do
       dir = Path.join(tmp_dir, "nonexistent")
 
