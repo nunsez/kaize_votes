@@ -60,10 +60,24 @@ defmodule KaizeVotes.CookieStore do
 
   @spec ensure_store_exists(Path.t()) :: :ok
   defp ensure_store_exists(filepath) do
-    case File.exists?(filepath) do
-      true -> :ok
-      _ -> File.write!(filepath, @default_cookie)
+    ensure_dir_exists(filepath)
+
+    unless File.exists?(filepath) do
+      File.write!(filepath, @default_cookie)
     end
+
+    :ok
+  end
+
+  @spec ensure_dir_exists(Path.t()) :: :ok
+  def ensure_dir_exists(filepath) do
+    dir = Path.dirname(filepath)
+
+    unless File.exists?(dir) do
+      File.mkdir_p!(dir)
+    end
+
+    :ok
   end
 
   @spec save_cookie(cookie(), Path.t()) :: :ok
