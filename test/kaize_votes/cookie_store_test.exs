@@ -60,4 +60,19 @@ defmodule KaizeVotes.CookieStoreTest do
       assert cookie === "xxx"
     end
   end
+
+  describe "handle_cast/2 :set" do
+    test "set cookie" do
+      path = CookieStore.build_cookie_path("set cookie")
+
+      # ensure path not exists
+      File.rm_rf!(path)
+
+      state = %{cookie: "empty", path: path}
+
+      {:noreply, new_state} = CookieStore.handle_cast({:set, "new"}, state)
+
+      assert new_state.cookie == "new"
+    end
+  end
 end
