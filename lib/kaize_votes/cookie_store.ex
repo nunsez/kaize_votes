@@ -35,7 +35,7 @@ defmodule KaizeVotes.CookieStore do
   @impl GenServer
   @spec init(keyword()) :: {:ok, state()}
   def init(init_arg) do
-    path = init_arg[:path] || @default_path
+    path = build_cookie_path(init_arg[:path] || default_cookie_path())
     ensure_store_exists(path)
 
     state = %{path: path, cookie: read_cookie(path)}
@@ -90,5 +90,19 @@ defmodule KaizeVotes.CookieStore do
     path
     |> File.read!()
     |> String.trim()
+  end
+
+  @spec build_cookie_path(Path.t()) :: Path.t()
+  def build_cookie_path(custom) do
+    safe_custom = String.trim_leading(custom, "/")
+
+    __MODULE__
+    |> Application.get_application()
+    |> Application.app_dir(["cookie_store", safe_custom])
+  end
+
+  @spec default_cookie_path() :: Path.t()
+  def default_cookie_path do
+    @default_path
   end
 end
