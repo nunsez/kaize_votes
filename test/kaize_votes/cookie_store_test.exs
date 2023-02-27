@@ -7,24 +7,47 @@ defmodule KaizeVotes.CookieStoreTest do
   alias KaizeVotes.CookieStore
 
   describe "init/1" do
-    @describetag :tmp_dir
+    test "starts successfully with default custom path" do
+      # ensure path not exists
+      CookieStore.default_cookie_path()
+      |> File.rm_rf!()
 
-    test "starts successfully when custom path exists", %{tmp_dir: tmp_dir} do
-      path = Path.join(tmp_dir, "test_store")
-      {:ok, _} = CookieStore.init(path: path)
-
-      assert File.exists?(path)
+      assert {:ok, _} = CookieStore.init([])
     end
 
-    test "starts successfully when custom path not exists", %{tmp_dir: tmp_dir} do
-      dir = Path.join(tmp_dir, "nonexistent")
+    test "starts successfully with custom path" do
+      relative = "custom path exists"
 
-      refute File.exists?(dir)
+      path = CookieStore.build_cookie_path(relative)
 
-      path = Path.join(dir, "test_store")
-      {:ok, _} = CookieStore.init(path: path)
+      # ensure path not exists
+      File.rm_rf!(path)
 
-      assert File.exists?(path)
+      assert {:ok, _} = CookieStore.init(path: relative)
+    end
+
+    test "starts successfully when custom path with dir" do
+      relative = "test_nested/cookie_path"
+
+      path = CookieStore.build_cookie_path(relative)
+
+      # ensure directory not exists
+      path
+      |> Path.dirname()
+      |> File.rm_rf!()
+
+      assert {:ok, _} = CookieStore.init(path: relative)
+    end
+
+    test "starts successfully with existing cookie" do
+      relative = "with_cookie_value"
+      value = "cookie value here"
+
+      path = CookieStore.build_cookie_path(relative)
+      File.write!(path, "cookie value here")
+
+      assert {:ok, _} = CookieStore.init(path: relative)
+      assert File.read!(path) == value
     end
   end
 end
