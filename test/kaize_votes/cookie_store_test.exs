@@ -50,4 +50,14 @@ defmodule KaizeVotes.CookieStoreTest do
       assert File.read!(path) == value
     end
   end
+
+  describe "handle_call/3 :get" do
+    test "get cookie" do
+      state = %{cookie: "xxx"}
+
+      {:reply, cookie, _} = CookieStore.handle_call(:get, self(), state)
+
+      assert cookie === "xxx"
+    end
+  end
 end
