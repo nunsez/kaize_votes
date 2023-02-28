@@ -3,15 +3,7 @@ defmodule KaizeVotes.CookieStore do
 
   use GenServer
 
-  @default_path "cookie.txt"
-  @default_cookie ""
-
-  @type cookie() :: String.t()
-
-  @type state() :: %{
-    path: Path.t(),
-    cookie: cookie()
-  }
+  alias KaizeVotes.CookieStore.State
 
   # Client
 
@@ -33,12 +25,12 @@ defmodule KaizeVotes.CookieStore do
   # Server (callbacks)
 
   @impl GenServer
-  @spec init(keyword()) :: {:ok, state()}
+  @spec init(keyword()) :: {:ok, State.t()}
   def init(init_arg) do
     path = build_cookie_path(init_arg[:path] || default_cookie_path())
     ensure_store_exists(path)
 
-    state = %{path: path, cookie: read_cookie(path)}
+    state = State.new(path, read_cookie(path))
 
     {:ok, state}
   end
@@ -63,7 +55,7 @@ defmodule KaizeVotes.CookieStore do
     ensure_dir_exists(filepath)
 
     unless File.exists?(filepath) do
-      File.write!(filepath, @default_cookie)
+      File.touch!(filepath)
     end
 
     :ok
@@ -80,12 +72,12 @@ defmodule KaizeVotes.CookieStore do
     :ok
   end
 
-  @spec save_cookie(cookie(), Path.t()) :: :ok
+  @spec save_cookie(State.cookie(), Path.t()) :: :ok
   defp save_cookie(cookie, path) do
     File.write!(path, cookie)
   end
 
-  @spec read_cookie(Path.t()) :: cookie()
+  @spec read_cookie(Path.t()) :: State.cookie()
   defp read_cookie(path) do
     path
     |> File.read!()
@@ -103,6 +95,6 @@ defmodule KaizeVotes.CookieStore do
 
   @spec default_cookie_path() :: Path.t()
   def default_cookie_path do
-    @default_path
+    "cookie.txt"
   end
 end
