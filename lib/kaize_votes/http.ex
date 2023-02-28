@@ -39,7 +39,7 @@ defmodule KaizeVotes.Http do
   end
 
   @spec extract_cookies(headers()) :: String.t()
-  def extract_cookies(headers) when is_list(headers) do
+  defp extract_cookies(headers) when is_list(headers) do
     headers
       |> Stream.filter(&cookie_header?/1)
       |> Stream.map(&elem(&1, 1))
