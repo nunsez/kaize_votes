@@ -1,4 +1,6 @@
 defmodule KaizeVotes.JsonTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
   doctest KaizeVotes.Json
 
