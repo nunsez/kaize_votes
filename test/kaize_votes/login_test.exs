@@ -4,23 +4,9 @@ defmodule KaizeVotes.LoginTest do
   use ExUnit.Case, async: true
   doctest KaizeVotes.Login
 
-  alias KaizeVotes.Env
-  alias KaizeVotes.Html
+  import KaizeVotes.TestHelper
+
   alias KaizeVotes.Login
-
-  @spec doc(Path.t()) :: Html.document()
-  def doc(file) do
-    file
-    |> html()
-    |> Html.parse()
-  end
-
-  @spec html(Path.t()) :: String.t()
-  def html(file) do
-    file
-    |> Path.expand(__DIR__)
-    |> File.read!()
-  end
 
   describe "logged_in?/1" do
     test "when logged in" do
@@ -50,28 +36,24 @@ defmodule KaizeVotes.LoginTest do
     end
   end
 
-  describe "login/1" do
-    defmodule HttpLoginMock do
+  describe "auth_token/1" do
+    defmodule HttpAuthTokenMock do
       @moduledoc false
 
       def get(_) do
         %{
           status: 200,
           headers: [],
-          body: KaizeVotes.LoginTest.html("../fixtures/login.html")
+          body: fixture("../fixtures/login.html")
         }
       end
-
-      def post(url, data), do: {url, data}
     end
 
     @tag :capture_log
-    test "works" do
-      {_, login_data} = Login.login(HttpLoginMock)
+    test "valid token" do
+      token = Login.auth_token(HttpAuthTokenMock)
 
-      assert login_data._token == "2nLtzQrKYGmovAi7P1X5tMEKQhxEe5AvQGkQ98vE"
-      assert login_data.email == Env.email()
-      assert login_data.password == Env.password()
+      assert token == "2nLtzQrKYGmovAi7P1X5tMEKQhxEe5AvQGkQ98vE"
     end
   end
 end

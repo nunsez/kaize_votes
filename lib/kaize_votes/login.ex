@@ -43,7 +43,7 @@ defmodule KaizeVotes.Login do
   end
 
   @spec auth_token(module()) :: String.t()
-  defp auth_token(http_client) do
+  def auth_token(http_client) do
     response = http_client.get(Constants.login_url())
     document = Html.parse(response.body)
     token_node = Html.find(document, "form.auth-form > input[name=\"_token\"]")
