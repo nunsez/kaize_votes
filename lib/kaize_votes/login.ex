@@ -3,10 +3,10 @@ defmodule KaizeVotes.Login do
 
   require Logger
 
+  alias KaizeVotes.Constants
+  alias KaizeVotes.Env
   alias KaizeVotes.Html
   alias KaizeVotes.Http
-
-  @login_url "https://kaize.io/login"
 
   @spec logged_in?(Html.document()) :: boolean()
   def logged_in?(document) do
@@ -20,23 +20,33 @@ defmodule KaizeVotes.Login do
 
   @spec login() :: Http.response()
   def login do
+    login(Env.http_client())
+  end
+
+  @spec login(module()) :: Http.response()
+  def login(http_client) do
     Logger.info("Logging in")
-    Http.post(@login_url, login_data())
+    http_client.post(Constants.login_url(), login_data())
   end
 
   @spec login_data() :: map()
   defp login_data do
     %{
       _token: auth_token(),
-      email: Application.get_env(:kaize_votes, :email),
-      password: Application.get_env(:kaize_votes, :password),
-      remember: "on"
+      email: Env.email(),
+      password: Env.password(),
+      remember: Constants.remember_login()
     }
   end
 
   @spec auth_token() :: String.t()
   defp auth_token do
-    response = Http.get(@login_url)
+    auth_token(Env.http_client())
+  end
+
+  @spec auth_token(module()) :: String.t()
+  defp auth_token(http_client) do
+    response = http_client.get(Constants.login_url())
     document = Html.parse(response.body)
     token_node = Html.find(document, "form.auth-form > input[name=\"_token\"]")
 
