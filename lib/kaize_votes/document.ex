@@ -3,8 +3,8 @@ defmodule KaizeVotes.Document do
 
   require Logger
 
+  alias KaizeVotes.Env
   alias KaizeVotes.Html
-  alias KaizeVotes.Http
 
   @spec has_next_url?(Html.document()) :: boolean()
   def has_next_url?(document) do
@@ -59,8 +59,13 @@ defmodule KaizeVotes.Document do
 
   @spec fetch_document(String.t()) :: Html.document()
   def fetch_document(url) do
+    fetch_document(url, Env.http_client())
+  end
+
+  @spec fetch_document(String.t(), module()) :: Html.document()
+  def fetch_document(url, http_client) do
     Logger.info("Getting a proposal: #{url}")
-    response = Http.get(url)
+    response = http_client.get(url)
 
     Html.parse(response.body)
   end
