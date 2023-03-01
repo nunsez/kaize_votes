@@ -65,6 +65,7 @@ defmodule KaizeVotes.LoginTest do
       def post(url, data), do: {url, data}
     end
 
+    @tag :capture_log
     test "works" do
       {_, login_data} = Login.login(HttpLoginMock)
 
