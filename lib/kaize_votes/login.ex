@@ -26,22 +26,20 @@ defmodule KaizeVotes.Login do
   @spec login(module()) :: Http.response()
   def login(http_client) do
     Logger.info("Logging in")
-    http_client.post(Constants.login_url(), login_data())
+
+    login_data = login_data(http_client)
+
+    http_client.post(Constants.login_url(), login_data)
   end
 
-  @spec login_data() :: map()
-  defp login_data do
+  @spec login_data(module()) :: map()
+  defp login_data(http_client) do
     %{
-      _token: auth_token(),
+      _token: auth_token(http_client),
       email: Env.email(),
       password: Env.password(),
       remember: Constants.remember_login()
     }
-  end
-
-  @spec auth_token() :: String.t()
-  defp auth_token do
-    auth_token(Env.http_client())
   end
 
   @spec auth_token(module()) :: String.t()
