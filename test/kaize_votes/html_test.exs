@@ -8,7 +8,7 @@ defmodule KaizeVotes.HtmlTest do
   alias KaizeVotes.TestHelper, as: H
 
   setup_all context do
-    doc = H.doc("html.html")
+    doc = H.doc("html/html.html")
 
     new_context = Map.put(context, :doc, doc)
 
