@@ -1,0 +1,12 @@
+<form class="proposal-vote-form form" method="post" action="https://kaize.io/proposal/current_number/save-vote">
+    <input type="hidden" name="_token" value="awesome_csrf_token">
+    <div class="buttons">
+        <div class="up active">I agree</div>
+        <div class="down ">I disagree</div>
+    </div>
+    <textarea name="comment" class="comment" placeholder="Not required, use it to explain your vote." rows="4"></textarea>
+    <input class="vote-value" type="hidden" name="vote" value="down">
+    <input value="42" type="hidden" name="vote_id">
+    <button class="primary-btn disable-on-click" type="submit">Change vote (-5KP)</button>
+    <a href="https://kaize.io/proposal/next_number" class="primary-btn only-border next-proposal">Next proposal</a>
+</form>

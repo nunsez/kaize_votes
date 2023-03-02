@@ -13,7 +13,7 @@ defmodule KaizeVotes.VoteTest do
   end
 
   setup_all context do
-    doc = H.doc("proposal.html")
+    doc = H.doc("vote/proposal.html")
 
     new_context = Map.put(context, :doc, doc)
 
@@ -24,7 +24,7 @@ defmodule KaizeVotes.VoteTest do
     @moduledoc false
 
     def post(url, data) do
-      assert url == "https://kaize.io/proposal/161282-63f8b8f1567f6/save-vote"
+      assert url == "https://kaize.io/proposal/current_number/save-vote"
       assert data.vote == "up"
     end
   end
@@ -45,7 +45,7 @@ defmodule KaizeVotes.VoteTest do
     @moduledoc false
 
     def post(url, data) do
-      assert url == "https://kaize.io/proposal/161282-63f8b8f1567f6/save-vote"
+      assert url == "https://kaize.io/proposal/current_number/save-vote"
       assert data.vote == "down"
     end
   end
