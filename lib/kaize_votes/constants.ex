@@ -4,6 +4,9 @@ defmodule KaizeVotes.Constants do
   @spec login_url() :: String.t()
   def login_url, do: "https://kaize.io/login"
 
+  @spec proposal_index_url() :: String.t()
+  def proposal_index_url, do: "https://kaize.io/proposals"
+
   @spec remember_login() :: String.t()
   def remember_login, do: "on"
 
