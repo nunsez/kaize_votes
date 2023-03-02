@@ -4,19 +4,18 @@ defmodule KaizeVotes.LoginTest do
   use ExUnit.Case, async: true
   doctest KaizeVotes.Login
 
-  import KaizeVotes.TestHelper
-
   alias KaizeVotes.Login
+  alias KaizeVotes.TestHelper, as: H
 
   describe "logged_in?/1" do
     test "when logged in" do
-      doc = doc("../fixtures/logged_in.html")
+      doc = H.doc("logged_in.html")
 
       assert Login.logged_in?(doc)
     end
 
     test "when logged out" do
-      doc = doc("../fixtures/logged_out.html")
+      doc = H.doc("logged_out.html")
 
       refute Login.logged_in?(doc)
     end
@@ -24,13 +23,13 @@ defmodule KaizeVotes.LoginTest do
 
   describe "logged_out?/1" do
     test "when logged in" do
-      doc = doc("../fixtures/logged_in.html")
+      doc = H.doc("logged_in.html")
 
       refute Login.logged_out?(doc)
     end
 
     test "when logged out" do
-      doc = doc("../fixtures/logged_out.html")
+      doc = H.doc("logged_out.html")
 
       assert Login.logged_out?(doc)
     end
@@ -44,7 +43,7 @@ defmodule KaizeVotes.LoginTest do
         %{
           status: 200,
           headers: [],
-          body: fixture("../fixtures/login.html")
+          body: H.fixture("login.html")
         }
       end
     end
