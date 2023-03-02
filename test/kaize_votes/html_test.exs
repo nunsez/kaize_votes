@@ -5,15 +5,10 @@ defmodule KaizeVotes.HtmlTest do
   doctest KaizeVotes.Html
 
   alias KaizeVotes.Html
-
-  @fixture_path "../fixtures/html.html"
+  alias KaizeVotes.TestHelper, as: H
 
   setup_all context do
-    doc =
-      @fixture_path
-      |> Path.expand(__DIR__)
-      |> File.read!()
-      |> Html.parse()
+    doc = H.doc("html.html")
 
     new_context = Map.put(context, :doc, doc)
 
