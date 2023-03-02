@@ -16,7 +16,7 @@ defmodule KaizeVotes.JsonTest do
     end
 
     test "parses object" do
-      assert Json.parse(~s|{"token":"secret"}|) == %{ "token" => "secret" }
+      assert Json.parse(~s|{"token":"secret"}|) == %{"token" => "secret"}
     end
 
     test "generates string from atom" do
@@ -28,7 +28,7 @@ defmodule KaizeVotes.JsonTest do
     end
 
     test "generates object" do
-      assert Json.generate(%{ token: "secret" }) == ~s|{"token":"secret"}|
+      assert Json.generate(%{token: "secret"}) == ~s|{"token":"secret"}|
     end
   end
 end
