@@ -9,13 +9,13 @@ defmodule KaizeVotes.LoginTest do
 
   describe "logged_in?/1" do
     test "when logged in" do
-      doc = H.doc("logged_in.html")
+      doc = H.doc("login/logged_in.html")
 
       assert Login.logged_in?(doc)
     end
 
     test "when logged out" do
-      doc = H.doc("logged_out.html")
+      doc = H.doc("login/logged_out.html")
 
       refute Login.logged_in?(doc)
     end
@@ -23,13 +23,13 @@ defmodule KaizeVotes.LoginTest do
 
   describe "logged_out?/1" do
     test "when logged in" do
-      doc = H.doc("logged_in.html")
+      doc = H.doc("login/logged_in.html")
 
       refute Login.logged_out?(doc)
     end
 
     test "when logged out" do
-      doc = H.doc("logged_out.html")
+      doc = H.doc("login/logged_out.html")
 
       assert Login.logged_out?(doc)
     end
@@ -43,7 +43,7 @@ defmodule KaizeVotes.LoginTest do
         %{
           status: 200,
           headers: [],
-          body: H.fixture("login.html")
+          body: H.fixture("login/login.html")
         }
       end
     end
@@ -52,7 +52,7 @@ defmodule KaizeVotes.LoginTest do
     test "valid token" do
       token = Login.auth_token(HttpAuthTokenMock)
 
-      assert token == "2nLtzQrKYGmovAi7P1X5tMEKQhxEe5AvQGkQ98vE"
+      assert token == "awesome_csrf_token"
     end
   end
 end
