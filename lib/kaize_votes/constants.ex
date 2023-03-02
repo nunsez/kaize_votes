@@ -12,4 +12,10 @@ defmodule KaizeVotes.Constants do
 
   @spec vote_down() :: String.t()
   def vote_down, do: "down"
+
+  @spec vote_down_threshold() :: pos_integer()
+  def vote_down_threshold, do: 3
+
+  @spec vote_up_threshold() :: pos_integer()
+  def vote_up_threshold, do: 3
 end

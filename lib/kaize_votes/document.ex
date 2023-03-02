@@ -3,6 +3,7 @@ defmodule KaizeVotes.Document do
 
   require Logger
 
+  alias KaizeVotes.Constants
   alias KaizeVotes.Env
   alias KaizeVotes.Html
 
@@ -15,17 +16,20 @@ defmodule KaizeVotes.Document do
 
   @spec next(Html.document()) :: Html.document()
   def next(document) do
+    next(document, Env.http_client())
+  end
+
+  @spec next(Html.document(), module()) :: Html.document()
+  def next(document, http_client) do
     document
     |> next_url()
-    |> fetch_document()
+    |> fetch_document(http_client)
   end
 
   @spec next_url(Html.document()) :: String.t() | nil
   defp next_url(document) do
     Html.attribute(document, "a.next-proposal", "href")
   end
-
-  @vote_down_threshold 3
 
   @spec enough_down_votes?(Html.document()) :: boolean()
   def enough_down_votes?(document) do
@@ -34,10 +38,8 @@ defmodule KaizeVotes.Document do
       |> Html.find(".proposal-user-vote .choice.down")
       |> Enum.count()
 
-    count >= @vote_down_threshold
+    count >= Constants.vote_down_threshold()
   end
-
-  @vote_up_threshold 3
 
   @spec enough_up_votes?(Html.document()) :: boolean()
   def enough_up_votes?(document) do
@@ -46,7 +48,7 @@ defmodule KaizeVotes.Document do
       |> Html.find(".proposal-user-vote .choice.up")
       |> Enum.count()
 
-    count >= @vote_up_threshold
+    count >= Constants.vote_up_threshold()
   end
 
   @spec votable?(Html.document()) :: boolean()
