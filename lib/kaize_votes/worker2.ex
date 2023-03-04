@@ -95,7 +95,7 @@ defmodule KaizeVotes.Worker2 do
         Process.send_after(self(), :login, Timeout.before_login())
 
       Votable.can_vote_down?(document) ->
-        :timer.sleep(Timeout.before_vote())
+        Process.sleep(Timeout.before_vote())
         Vote.down(document)
 
         new_state = %{state | proposals: rest}
@@ -105,7 +105,7 @@ defmodule KaizeVotes.Worker2 do
         {:noreply, new_state}
 
       Votable.can_vote_up?(document) ->
-        :timer.sleep(Timeout.before_vote())
+        Process.sleep(Timeout.before_vote())
         Vote.up(document)
 
         new_state = %{state | proposals: rest}
