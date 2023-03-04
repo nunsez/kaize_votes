@@ -50,32 +50,7 @@ defmodule KaizeVotes.Worker2 do
 
       {:noreply, new_state}
     else
-      Process.send_after(self(), :login, Timeout.before_login())
-
-      {:noreply, state}
-    end
-  end
-
-  def handle_info(:login, state) do
-    document = Document.fetch_document(Constants.proposal_index_url())
-
-    if Login.logged_in?(document) do
-      Process.send_after(self(), :enqueue, Timeout.before_next())
-
-      {:noreply, state}
-    else
-      location = Login.login()
-
-      case location do
-        {:ok, _} ->
-          Process.send_after(self(), :enqueue, Timeout.before_next())
-
-          {:noreply, state}
-        error ->
-          Logger.error("Login failed, stop")
-
-          {:stop, error}
-      end
+      {:noreply, state, {:continue, :login}}
     end
   end
 
@@ -92,7 +67,7 @@ defmodule KaizeVotes.Worker2 do
 
     cond do
       Login.logged_out?(document) ->
-        Process.send_after(self(), :login, Timeout.before_login())
+        {:noreply, state, {:continue, :login}}
 
       Votable.can_vote_down?(document) ->
         Process.sleep(Timeout.before_vote())
@@ -127,6 +102,32 @@ defmodule KaizeVotes.Worker2 do
     Logger.error("Unexpected info message: #{inspect(msg)}")
 
     {:noreply, state}
+  end
+
+  @impl GenServer
+  def handle_continue(:login, state) do
+    Process.sleep(Timeout.before_next())
+    document = Document.fetch_document(Constants.proposal_index_url())
+
+    if Login.logged_in?(document) do
+      Process.send_after(self(), :enqueue, Timeout.before_next())
+
+      {:noreply, state}
+    else
+      Process.sleep(Timeout.before_login())
+      location = Login.login()
+
+      case location do
+        {:ok, _} ->
+          Process.send_after(self(), :enqueue, Timeout.before_next())
+
+          {:noreply, state}
+        error ->
+          Logger.error("Login failed, stop")
+
+          {:stop, error}
+      end
+    end
   end
 
   @spec votable?(Proposal.t()) :: boolean()
