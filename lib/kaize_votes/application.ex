@@ -11,14 +11,14 @@ defmodule KaizeVotes.Application do
     children = [
       # Starts a worker by calling: KaizeVotes.Worker.start_link(arg)
       # {KaizeVotes.Worker, arg}
-      {KaizeVotes.CookieStore, [path: "cookie.txt"]},
       {Finch, name: MyFinch},
+      {KaizeVotes.CookieStore, [path: "cookie.txt"]},
       {KaizeVotes.Worker, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: KaizeVotes.Supervisor]
+    opts = [strategy: :rest_for_one, name: KaizeVotes.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end
