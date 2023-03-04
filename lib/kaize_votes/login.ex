@@ -18,26 +18,20 @@ defmodule KaizeVotes.Login do
     not logged_in?(document)
   end
 
-  @spec login() :: :ok | :error
+  @spec login() :: {:ok, String.t} | {:error, :no_location}
   def login do
     login(Env.http_client())
   end
 
-  @spec login(module()) :: :ok | :error
+  @spec login(module()) :: {:ok, String.t} | {:error, :no_location}
   def login(http_client) do
     Logger.info("Logging in")
 
     login_data = login_data(http_client)
 
-    location =
-      Constants.login_url()
-      |> http_client.post(login_data)
-      |> Http.location()
-
-    case location do
-      {:ok, _url} -> :ok
-      _ -> :error
-    end
+    Constants.login_url()
+    |> http_client.post(login_data)
+    |> Http.location()
   end
 
   @spec login_data(module()) :: map()
