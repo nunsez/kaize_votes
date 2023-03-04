@@ -4,6 +4,8 @@ defmodule KaizeVotes.Proposal do
   alias KaizeVotes.Html
   alias KaizeVotes.Proposal.NewProposal
 
+  @derive {Inspect, []}
+
   defstruct [
     title: "",
     url: "",
