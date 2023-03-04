@@ -66,7 +66,7 @@ defmodule KaizeVotes.Document do
 
   @spec fetch_document(String.t(), module()) :: Html.document()
   def fetch_document(url, http_client) do
-    Logger.info("Getting a proposal: #{url}")
+    Logger.info("Fetch #{url}")
     response = http_client.get(url)
 
     Html.parse(response.body)
