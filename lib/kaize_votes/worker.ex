@@ -94,6 +94,8 @@ defmodule KaizeVotes.Worker do
 
         new_state = %{state | proposals: rest}
 
+        Process.send_after(self(), :iter, Timeout.before_next())
+
         {:noreply, new_state}
     end
   end
