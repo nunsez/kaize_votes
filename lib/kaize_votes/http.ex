@@ -57,4 +57,29 @@ defmodule KaizeVotes.Http do
     [value | _opts] = String.split(cookie, ";", parts: 2)
     value
   end
+
+  @location_header_name "location"
+
+  @spec location(response()) :: {:ok, String.t()} | {:error, :no_location}
+  def location(response) do
+    result =
+      response
+      |> header_values(@location_header_name)
+      |> List.last()
+
+    case result do
+      {_key, url} -> {:ok, url}
+      _ -> {:error, :no_location}
+    end
+  end
+
+  @spec header_values(response(), String.t()) :: Enumerable.t()
+  def header_values(response, value) do
+    Enum.filter(response.headers, &header_matches?(&1, value))
+  end
+
+  @spec header_matches?(header(), String.t()) :: boolean()
+  defp header_matches?({name, _}, value) do
+    String.match?(name, ~r/\A#{value}\z/i)
+  end
 end

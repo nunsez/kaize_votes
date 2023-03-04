@@ -7,6 +7,9 @@ defmodule KaizeVotes.Constants do
   @spec proposal_index_url() :: String.t()
   def proposal_index_url, do: "https://kaize.io/proposals"
 
+  @spec success_login_location() :: String.t()
+  def success_login_location, do: "https://kaize.io"
+
   @spec remember_login() :: String.t()
   def remember_login, do: "on"
 
