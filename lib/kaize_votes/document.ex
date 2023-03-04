@@ -7,30 +7,6 @@ defmodule KaizeVotes.Document do
   alias KaizeVotes.Env
   alias KaizeVotes.Html
 
-  @spec has_next_url?(Html.document()) :: boolean()
-  def has_next_url?(document) do
-    url = next_url(document)
-
-    is_binary(url) and String.trim(url) != ""
-  end
-
-  @spec next(Html.document()) :: Html.document()
-  def next(document) do
-    next(document, Env.http_client())
-  end
-
-  @spec next(Html.document(), module()) :: Html.document()
-  def next(document, http_client) do
-    document
-    |> next_url()
-    |> fetch_document(http_client)
-  end
-
-  @spec next_url(Html.document()) :: String.t() | nil
-  defp next_url(document) do
-    Html.attribute(document, "a.next-proposal", "href")
-  end
-
   @spec enough_down_votes?(Html.document()) :: boolean()
   def enough_down_votes?(document) do
     count =

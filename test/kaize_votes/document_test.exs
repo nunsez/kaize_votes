@@ -7,42 +7,6 @@ defmodule KaizeVotes.DocumentTest do
   alias KaizeVotes.Document
   alias KaizeVotes.TestHelper, as: H
 
-  describe "has_next_url?/1" do
-    test "document with next proposal" do
-      doc = H.doc("document/proposal_with_next.html")
-
-      assert Document.has_next_url?(doc)
-    end
-
-    test "document without next proposal" do
-      doc = H.doc("document/proposal_without_next.html")
-
-      refute Document.has_next_url?(doc)
-    end
-  end
-
-  defmodule HttpNextMock do
-    @moduledoc false
-
-    def get("https://kaize.io/proposal/next_number") do
-      %{
-        status: 200,
-        headers: [],
-        body: "<html></html>"
-      }
-    end
-  end
-
-  describe "next/2" do
-    @tag :capture_log
-    test "next successfully" do
-      doc = H.doc("document/form_data_down.html")
-      result = Document.next(doc, HttpNextMock)
-
-      assert result == [{"html", [], []}]
-    end
-  end
-
   describe "enough_down_votes?/1" do
     test "when 1 up" do
       doc = H.doc("document/proposal_1_up.html")
