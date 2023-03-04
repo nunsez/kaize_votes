@@ -123,6 +123,12 @@ defmodule KaizeVotes.Worker2 do
     end
   end
 
+  def handle_info(msg, state) do
+    Logger.error("Unexpected info message: #{inspect(msg)}")
+
+    {:noreply, state}
+  end
+
   @spec votable?(Proposal.t()) :: boolean()
   defp votable?(proposal) do
     if proposal.status == :unvoted do
