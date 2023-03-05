@@ -7,10 +7,9 @@ defmodule KaizeVotes.Proposal.NewProposal do
   @spec call(Html.html_node()) :: {:ok, Proposal.t()} | {:error, atom()}
   def call(node) do
     with {:ok, up_node, down_node} <- vote_containers(node),
-          {:ok, up} <- extract_number(up_node),
-          {:ok, down} <- extract_number(down_node),
-          {:ok, url} <- url(node) do
-
+         {:ok, up} <- extract_number(up_node),
+         {:ok, down} <- extract_number(down_node),
+         {:ok, url} <- url(node) do
       proposal = %Proposal{
         title: title(node),
         url: url,
@@ -47,7 +46,7 @@ defmodule KaizeVotes.Proposal.NewProposal do
   end
 
   @spec extract_number(Html.html_node()) ::
-    {:ok, integer()} | {:error, :invalid_number} | {:error, :vote_not_found}
+          {:ok, integer()} | {:error, :invalid_number} | {:error, :vote_not_found}
   defp extract_number(vote_node) do
     result = Html.find(vote_node, ".vote-number")
 
@@ -65,7 +64,7 @@ defmodule KaizeVotes.Proposal.NewProposal do
   end
 
   @spec vote_containers(Html.html_node()) ::
-    {:ok, Html.html_node(), Html.html_node()} | {:error, :bad_vote_container}
+          {:ok, Html.html_node(), Html.html_node()} | {:error, :bad_vote_container}
   defp vote_containers(node) do
     result = Html.find(node, ".proposals-votes .vote-container")
 

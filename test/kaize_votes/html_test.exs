@@ -26,12 +26,12 @@ defmodule KaizeVotes.HtmlTest do
       """
 
       assert [
-        {"html", [{"lang", "en"}],
-          [
-            {"head", [], []},
-            {"body", [], []}
-          ]}
-      ] = Html.parse(html)
+               {"html", [{"lang", "en"}],
+                [
+                  {"head", [], []},
+                  {"body", [], []}
+                ]}
+             ] = Html.parse(html)
     end
   end
 
@@ -84,7 +84,7 @@ defmodule KaizeVotes.HtmlTest do
       selector = "html"
       attribute = "lang"
 
-      new_doc = Html.attr(doc, selector, attribute, fn(value) -> value <> "glish" end)
+      new_doc = Html.attr(doc, selector, attribute, fn value -> value <> "glish" end)
 
       assert Html.attribute(new_doc, selector, attribute) == "english"
     end
@@ -94,7 +94,7 @@ defmodule KaizeVotes.HtmlTest do
       attribute = "foo"
       value = "bar"
 
-      new_doc = Html.attr(doc, selector, attribute, fn(_) -> value end)
+      new_doc = Html.attr(doc, selector, attribute, fn _ -> value end)
 
       assert Html.attribute(new_doc, selector, attribute) == value
     end

@@ -14,8 +14,8 @@ defmodule KaizeVotes.Worker do
   alias KaizeVotes.Vote
 
   @type state() :: %{
-    proposals: [Proposal.t()]
-  }
+          proposals: [Proposal.t()]
+        }
 
   # Client
 
@@ -124,6 +124,7 @@ defmodule KaizeVotes.Worker do
           Process.send_after(self(), :enqueue, Timeout.before_next())
 
           {:noreply, state}
+
         error ->
           Logger.error("Login failed, stop")
 
@@ -135,8 +136,8 @@ defmodule KaizeVotes.Worker do
   @spec votable?(Proposal.t()) :: boolean()
   defp votable?(proposal) do
     if proposal.status == :unvoted do
-      proposal.down >= Constants.vote_down_threshold()
-        or proposal.up >= Constants.vote_up_threshold()
+      proposal.down >= Constants.vote_down_threshold() or
+        proposal.up >= Constants.vote_up_threshold()
     else
       false
     end

@@ -37,6 +37,6 @@ defmodule KaizeVotes.Vote do
     http_client.post(url, Document.form_data(form, value))
 
     selector = ~s{form.proposal-vote-form input[name="vote"]}
-    Html.attr(document, selector, "value", fn(_) -> value end)
+    Html.attr(document, selector, "value", fn _ -> value end)
   end
 end

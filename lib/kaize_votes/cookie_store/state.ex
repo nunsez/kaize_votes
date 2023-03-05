@@ -3,10 +3,8 @@ defmodule KaizeVotes.CookieStore.State do
 
   @enforce_keys [:path]
 
-  defstruct [
-    path: nil,
-    cookie: ""
-  ]
+  defstruct path: nil,
+            cookie: ""
 
   @type cookie() :: String.t()
 

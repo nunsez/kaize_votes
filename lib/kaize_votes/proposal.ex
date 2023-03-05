@@ -6,23 +6,21 @@ defmodule KaizeVotes.Proposal do
 
   @derive {Inspect, []}
 
-  defstruct [
-    title: "",
-    url: "",
-    status: :closed,
-    up: 0,
-    down: 0
-  ]
+  defstruct title: "",
+            url: "",
+            status: :closed,
+            up: 0,
+            down: 0
 
   @type status() :: :voted | :unvoted | :closed
 
   @type t() :: %__MODULE__{
-    title: String.t(),
-    url: String.t(),
-    status: status(),
-    up: non_neg_integer(),
-    down: non_neg_integer()
-  }
+          title: String.t(),
+          url: String.t(),
+          status: status(),
+          up: non_neg_integer(),
+          down: non_neg_integer()
+        }
 
   @spec new(Html.html_node()) :: {:ok, t()} | {:error, atom()}
   defdelegate new(node), to: NewProposal, as: :call
@@ -33,7 +31,7 @@ defmodule KaizeVotes.Proposal do
     |> Html.find(".proposals-list .proposals-element")
     |> Stream.map(&new(&1))
     |> Stream.filter(&valid_proposal?(&1))
-    |> Stream.map(fn({:ok, proposal}) -> proposal end)
+    |> Stream.map(fn {:ok, proposal} -> proposal end)
     |> Enum.to_list()
   end
 

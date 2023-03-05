@@ -41,10 +41,10 @@ defmodule KaizeVotes.Http do
   @spec extract_cookies(headers()) :: String.t()
   defp extract_cookies(headers) when is_list(headers) do
     headers
-      |> Stream.filter(&cookie_header?/1)
-      |> Stream.map(&elem(&1, 1))
-      |> Stream.map(&drop_cookie_opts/1)
-      |> Enum.join("; ")
+    |> Stream.filter(&cookie_header?/1)
+    |> Stream.map(&elem(&1, 1))
+    |> Stream.map(&drop_cookie_opts/1)
+    |> Enum.join("; ")
   end
 
   @spec cookie_header?(header()) :: boolean()

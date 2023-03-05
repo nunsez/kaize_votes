@@ -14,12 +14,12 @@ defmodule KaizeVotes.Proposal.NewProposalTest do
       {:ok, proposal} = NewProposal.call(node)
 
       assert %Proposal{
-        title: "Voted Proposal Title",
-        url: "https://kaize.io/proposal/voted_id-hash",
-        status: :voted,
-        up: 4,
-        down: 1
-      } = proposal
+               title: "Voted Proposal Title",
+               url: "https://kaize.io/proposal/voted_id-hash",
+               status: :voted,
+               up: 4,
+               down: 1
+             } = proposal
     end
 
     test "returns unvoted proposal from node" do
@@ -27,12 +27,12 @@ defmodule KaizeVotes.Proposal.NewProposalTest do
       {:ok, proposal} = NewProposal.call(node)
 
       assert %Proposal{
-        title: "Unvoted Proposal Title",
-        url: "https://kaize.io/proposal/unvoted_id-hash",
-        status: :unvoted,
-        up: 3,
-        down: 4
-      } = proposal
+               title: "Unvoted Proposal Title",
+               url: "https://kaize.io/proposal/unvoted_id-hash",
+               status: :unvoted,
+               up: 3,
+               down: 4
+             } = proposal
     end
 
     test "returns error when votes container is invalid" do
