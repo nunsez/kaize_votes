@@ -20,8 +20,8 @@ defmodule KaizeVotes.Constants do
   def vote_down, do: "down"
 
   @spec vote_down_threshold() :: pos_integer()
-  def vote_down_threshold, do: 4
+  def vote_down_threshold, do: 2
 
   @spec vote_up_threshold() :: pos_integer()
-  def vote_up_threshold, do: 4
+  def vote_up_threshold, do: 2
 end
